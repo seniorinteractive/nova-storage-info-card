@@ -268,6 +268,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -280,12 +293,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         };
     },
     mounted: function mounted() {
-        this.refreshStatsPeriodically();
+        this.load();
     },
 
 
     methods: {
-        refreshStatsPeriodically: function refreshStatsPeriodically() {
+        refresh: function refresh() {},
+        load: function load() {
             var _this = this;
 
             this.loading = true;
@@ -304,13 +318,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     size: res.data.size,
                     items: res.data.items
                 });
-
-                _this2.disks.push({
-                    bucket: res.data.bucket,
-                    size: res.data.size,
-                    items: res.data.items
-                });
-
                 _this2.disks.push({
                     bucket: res.data.bucket,
                     size: res.data.size,
@@ -337,64 +344,114 @@ var render = function() {
         "loading-view",
         { staticClass: "w-full", attrs: { loading: _vm.loading } },
         [
-          _c("h3", { staticClass: "mr-3 text-base text-80 font-bold" }, [
-            _vm._v("Контроль дисков")
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "py-2 flex lg:inline-flex" }, [
-            _c(
-              "span",
-              {
-                staticClass:
-                  "flex rounded-full bg-primary uppercase px-2 py-1 text-xs text-white font-bold mr-3"
-              },
-              [_vm._v("S3")]
-            ),
+          _c("div", { staticClass: "flex flex-row justify-between" }, [
+            _c("div", [
+              _c("h3", { staticClass: "mr-3 text-base text-80 font-bold" }, [
+                _vm._v("Контроль дисков")
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "py-2 flex lg:inline-flex" }, [
+                _c(
+                  "span",
+                  {
+                    staticClass:
+                      "flex rounded-full bg-50 uppercase px-2 py-1 text-xs font-bold mr-3"
+                  },
+                  [_vm._v("S3")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "span",
+                  {
+                    staticClass:
+                      "flex rounded-full bg-50 uppercase px-2 py-1 text-xs font-bold mr-3"
+                  },
+                  [_vm._v("5 TB")]
+                )
+              ])
+            ]),
             _vm._v(" "),
-            _c(
-              "span",
-              {
-                staticClass:
-                  "flex rounded-full bg-primary uppercase px-2 py-1 text-xs text-white font-bold mr-3"
-              },
-              [_vm._v("5 TB")]
-            )
+            _c("div", [
+              _c(
+                "button",
+                {
+                  staticClass:
+                    "bg-primary flex flex-row items-center text-white rounded py-2 px-4",
+                  on: { click: _vm.refresh }
+                },
+                [
+                  _c("span", { staticClass: "mr-2" }, [_vm._v("Обновить")]),
+                  _vm._v(" "),
+                  _c(
+                    "svg",
+                    {
+                      attrs: {
+                        xmlns: "http://www.w3.org/2000/svg",
+                        width: "16",
+                        height: "16",
+                        viewBox: "0 0 24 24"
+                      }
+                    },
+                    [
+                      _c("path", {
+                        attrs: {
+                          d:
+                            "M20.944 12.979c-.489 4.509-4.306 8.021-8.944 8.021-2.698 0-5.112-1.194-6.763-3.075l1.245-1.633c1.283 1.645 3.276 2.708 5.518 2.708 3.526 0 6.444-2.624 6.923-6.021h-2.923l4-5.25 4 5.25h-3.056zm-15.864-1.979c.487-3.387 3.4-6 6.92-6 2.237 0 4.228 1.059 5.51 2.698l1.244-1.632c-1.65-1.876-4.061-3.066-6.754-3.066-4.632 0-8.443 3.501-8.941 8h-3.059l4 5.25 4-5.25h-2.92z",
+                          fill: "currentColor"
+                        }
+                      })
+                    ]
+                  )
+                ]
+              )
+            ])
           ]),
           _vm._v(" "),
           !_vm.initialLoading
-            ? _c("table", { staticClass: "table w-full" }, [
-                _c(
-                  "tbody",
-                  _vm._l(_vm.disks, function(disk, i) {
-                    return _c("tr", { key: i }, [
-                      _c("td", [
-                        _c("span", { staticClass: "font-semibold" }, [
-                          _vm._v(_vm._s(i + 1) + ". test")
+            ? _c(
+                "ol",
+                {
+                  staticClass: "w-full text-black",
+                  class: _vm.disks.length === 1 ? "list-none pl-0" : "pl-4"
+                },
+                _vm._l(_vm.disks, function(disk, i) {
+                  return _c("li", { key: i }, [
+                    _c(
+                      "div",
+                      {
+                        staticClass:
+                          "flex flex-row justify-between border-b text-black-50 pb-2 py-3",
+                        class:
+                          _vm.disks.length === 1
+                            ? "border-transparent"
+                            : "border-primary-10%"
+                      },
+                      [
+                        _c("div", { staticClass: "flex flex-col" }, [
+                          _c("span", { staticClass: "font-semibold" }, [
+                            _vm._v("test")
+                          ]),
+                          _vm._v(" "),
+                          _c("span", { staticClass: "w-full font-light" }, [
+                            _vm._v(_vm._s(disk.bucket))
+                          ])
                         ]),
                         _vm._v(" "),
-                        _c("br"),
-                        _vm._v(" "),
-                        _c("span", { staticClass: "w-full font-light" }, [
-                          _vm._v(_vm._s(disk.bucket))
+                        _c("div", { staticClass: "flex flex-col" }, [
+                          _c("span", { staticClass: "w-full font-semibold" }, [
+                            _vm._v(_vm._s(disk.size))
+                          ]),
+                          _vm._v(" "),
+                          _c("span", { staticClass: "w-full font-light" }, [
+                            _vm._v(_vm._s(disk.items))
+                          ])
                         ])
-                      ]),
-                      _vm._v(" "),
-                      _c("td", {}, [
-                        _c("span", { staticClass: "w-full font-semibold" }, [
-                          _vm._v(_vm._s(disk.size))
-                        ]),
-                        _vm._v(" "),
-                        _c("br"),
-                        _vm._v(" "),
-                        _c("span", { staticClass: "w-full font-light" }, [
-                          _vm._v(_vm._s(disk.items))
-                        ])
-                      ])
-                    ])
-                  }),
-                  0
-                )
-              ])
+                      ]
+                    )
+                  ])
+                }),
+                0
+              )
             : _vm._e()
         ]
       )
