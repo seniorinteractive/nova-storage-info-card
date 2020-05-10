@@ -251,43 +251,72 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['card'],
 
-    props: {
-        loading: { default: true },
+    data: function data() {
+        return {
+            loading: true,
+            disks: []
+        };
+    },
+    mounted: function mounted() {
+        this.refreshStatsPeriodically();
+    },
 
-        data: function data() {
-            return {
-                componentLoading: this.loading,
-                objSize: 0
-            };
+
+    methods: {
+        refreshStatsPeriodically: function refreshStatsPeriodically() {
+            var _this = this;
+
+            this.loading = true;
+            Promise.all([this.loadStats()]).then(function () {
+                _this.loading = false;
+            });
         },
-        mounted: function mounted() {
-            this.refreshStatsPeriodically();
-        },
+        loadStats: function loadStats() {
+            var _this2 = this;
 
-
-        methods: {
-            refreshStatsPeriodically: function refreshStatsPeriodically() {
-                var _this = this;
-
-                this.componentLoading = true;
-                Promise.all([this.loadStats()]).then(function () {
-                    _this.componentLoading = false;
-                    _this.timeout = setTimeout(function () {
-                        _this.refreshStatsPeriodically(false);
-                    }, 5000);
+            return Nova.request().post('/nova-vendor/storage-info-card/stats', {
+                disk: 'yandex'
+            }).then(function (res) {
+                _this2.disks.push({
+                    bucket: res.data.bucket,
+                    size: res.data.size,
+                    items: res.data.items
                 });
-            },
-            loadStats: function loadStats() {
-                var _this2 = this;
 
-                Nova.request().get('nova-vendor/StorageInfoCard/stats').then(function (response) {
-                    _this2.objSize = response.data.objSize;
+                _this2.disks.push({
+                    bucket: res.data.bucket,
+                    size: res.data.size,
+                    items: res.data.items
                 });
-            }
+
+                _this2.disks.push({
+                    bucket: res.data.bucket,
+                    size: res.data.size,
+                    items: res.data.items
+                });
+            });
         }
     }
 });
@@ -302,26 +331,75 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "card",
-    { staticClass: "flex flex-col items-center justify-center" },
+    { staticClass: "card relative px-6 py-4 card-panel h-auto" },
     [
-      _c("div", { staticClass: "px-3 py-3" }, [
-        _c("h1", { staticClass: "text-center text-3xl text-80 font-light" }, [
-          _vm._v(_vm._s(_vm.objSize))
-        ]),
-        _vm._v(" "),
-        _c(
-          "button",
-          {
-            on: {
-              click: function($event) {
-                _vm.objSize += 1
-              }
-            }
-          },
-          [_vm._v("Click")]
-        )
-      ])
-    ]
+      _c(
+        "loading-view",
+        { staticClass: "w-full", attrs: { loading: _vm.loading } },
+        [
+          _c("h3", { staticClass: "mr-3 text-base text-80 font-bold" }, [
+            _vm._v("Контроль дисков")
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "py-2 flex lg:inline-flex" }, [
+            _c(
+              "span",
+              {
+                staticClass:
+                  "flex rounded-full bg-primary uppercase px-2 py-1 text-xs text-white font-bold mr-3"
+              },
+              [_vm._v("S3")]
+            ),
+            _vm._v(" "),
+            _c(
+              "span",
+              {
+                staticClass:
+                  "flex rounded-full bg-primary uppercase px-2 py-1 text-xs text-white font-bold mr-3"
+              },
+              [_vm._v("5 TB")]
+            )
+          ]),
+          _vm._v(" "),
+          !_vm.initialLoading
+            ? _c("table", { staticClass: "table w-full" }, [
+                _c(
+                  "tbody",
+                  _vm._l(_vm.disks, function(disk, i) {
+                    return _c("tr", { key: i }, [
+                      _c("td", [
+                        _c("span", { staticClass: "font-semibold" }, [
+                          _vm._v(_vm._s(i + 1) + ". test")
+                        ]),
+                        _vm._v(" "),
+                        _c("br"),
+                        _vm._v(" "),
+                        _c("span", { staticClass: "w-full font-light" }, [
+                          _vm._v(_vm._s(disk.bucket))
+                        ])
+                      ]),
+                      _vm._v(" "),
+                      _c("td", {}, [
+                        _c("span", { staticClass: "w-full font-semibold" }, [
+                          _vm._v(_vm._s(disk.size))
+                        ]),
+                        _vm._v(" "),
+                        _c("br"),
+                        _vm._v(" "),
+                        _c("span", { staticClass: "w-full font-light" }, [
+                          _vm._v(_vm._s(disk.items))
+                        ])
+                      ])
+                    ])
+                  }),
+                  0
+                )
+              ])
+            : _vm._e()
+        ]
+      )
+    ],
+    1
   )
 }
 var staticRenderFns = []

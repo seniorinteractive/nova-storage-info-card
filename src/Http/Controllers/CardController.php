@@ -2,48 +2,115 @@
 
 namespace Qubeek\StorageInfoCard\Http\Controllers;
 
-use Aws\S3\Exception\S3Exception;
+use Aws\ResultPaginator;
 use Aws\S3\S3Client;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Routing\Controller;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\Storage;
+use League\Flysystem\AwsS3v3\AwsS3Adapter;
+use League\Flysystem\Filesystem;
 
 class CardController extends Controller
 {
-    public function storage()
+    /**
+     * @param int $size
+     * @param int $items
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function storage($size = 0, $items = 0)
     {
-        $sharedConfig = [
-            'credentials' => [
-                'key'      => env('YANDEX_KEY'),
-                'secret'   => env('YANDEX_SECRET'),
-            ],
-            'region'   => env('YANDEX_REGION'),
-            'endpoint' => 'https://'.env('YANDEX_STATIC_HOST'),
-            'version'  => 'latest',
-        ];
+        $data = request()->validate([
+            'disk' => 'required'
+        ]);
 
-        $bucket = env('YANDEX_CONTAINER');
+        /** @var S3Client $client */
+        list($s3, $bucket) = $this->getClient($data['disk']);
 
-        // Instantiate the client.
-        $s3 = new S3Client($sharedConfig);
-
-        $objSize = 0;
-        // Use the high-level iterators (returns ALL of your objects).
-        try {
-            $results = $s3->getPaginator('ListObjects', [
-                'Bucket' => $bucket
+        /**
+         * Check, that we working with S3 client only.
+         * Otherwise we need to use different driver.
+         * In future we should create extra functions to work with local drivers
+         */
+        if ($s3 instanceof S3Client) {
+            /**
+             * Fetch list of object from storage
+             * @var ResultPaginator $results
+             */
+            $results = $s3->getPaginator('ListObjectsV2', [
+                'Bucket' => $bucket,
             ]);
 
+            /** Serve over results from request */
             foreach ($results as $result) {
-                foreach ($result['Contents'] as $object) {
-                    $objSize +=$object['Size'];
-//                    echo $object['Key'] . PHP_EOL;
-//                    echo $object['Size'] . PHP_EOL;
-                }
+                $size += array_sum(array_column($result['Contents'], 'Size'));
+                $items += count(array_values($result['Contents']));
             }
-        } catch (S3Exception $e) {
-            echo $e->getMessage() . PHP_EOL;
+
+            /**
+             * Return success status and data for current disk.
+             * Used choice to create interesting and common view for items
+             */
+            return response()->json([
+                'status' => 200,
+                'size' => $this->bytesToHuman($size),
+                'bucket' => $bucket,
+                'items' => $this->prettyItems($items, 'объект|объекта|объектов')
+            ], 200);
+        } else {
+            /** Return error, when the disk doesn't provide S3 compatibility */
+            return response()->json([
+                'status' => 400,
+                'message' => 'The disk doesn\'t provide S3 compatibility'
+            ], 400);
         }
-        $objSize = $objSize / 1024;
-        return response()->json($objSize, 200);
+    }
+
+    /**
+     * Prettify output for bytes
+     *
+     * @param $bytes
+     * @return string
+     */
+    protected function bytesToHuman($bytes)
+    {
+        $units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
+        for ($i = 0; $bytes > 1024; $i++) $bytes /= 1024;
+        return round($bytes, 2) . ' ' . $units[$i];
+    }
+
+    /**
+     * Just prettify output
+     *
+     * @param int $items
+     * @param string $values
+     * @return string
+     */
+    protected function prettyItems(int $items, string $values)
+    {
+        return number_format($items, 0, ',', ' ') . ' ' . Lang::choice($values, $items, [], 'ru');
+    }
+
+    /**
+     * Just prettify digging into object.
+     * We can use it by one line, but this isn't clear
+     *
+     * @param string $disk
+     * @return array
+     */
+    protected function getClient(string $disk)
+    {
+        /** @var FilesystemAdapter $fs */
+        $fs = Storage::disk($disk);
+
+        /** @var Filesystem $driver */
+        $driver = $fs->getDriver();
+
+        /** @var AwsS3Adapter $adapter */
+        $adapter = $driver->getAdapter();
+
+        return [
+            $adapter->getClient(), $adapter->getBucket()
+        ];
     }
 }

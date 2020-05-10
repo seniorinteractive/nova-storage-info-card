@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Qubeek\StorageInfoCard\Http\Controllers\CardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,4 +15,4 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/stats', Qubeek\StorageInfoCard\Http\Controllers\CardController::class . '@storage');
+Route::post('/stats', CardController::class . '@storage');
