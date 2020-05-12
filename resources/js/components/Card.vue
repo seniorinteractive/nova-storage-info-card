@@ -6,7 +6,7 @@
                     <h3 class="mr-3 text-base text-80 font-bold">Контроль дисков</h3>
                     <div class="py-2 flex lg:inline-flex">
                         <span class="flex rounded-full bg-50 uppercase px-2 py-1 text-xs font-bold mr-3">S3</span>
-                        <span class="flex rounded-full bg-50 uppercase px-2 py-1 text-xs font-bold mr-3">5 TB</span>
+                        <span class="flex rounded-full bg-50 uppercase px-2 py-1 text-xs font-bold mr-3">{{ card.count }} {{ card.measure }}</span>
                     </div>
                 </div>
                 <div>
@@ -23,7 +23,7 @@
                 <li v-for="(disk, i) in disks" :key="i">
                     <div class="flex flex-row justify-between border-b text-black-50 pb-2 py-3" :class="disks.length === 1 ? 'border-transparent' : 'border-primary-10%'">
                         <div class="flex flex-col">
-                            <span class="font-semibold">test</span>
+                            <span class="font-semibold">{{card.name}}</span>
                             <span class="w-full font-light">{{ disk.bucket }}</span>
                         </div>
                         <div class="flex flex-col">
@@ -39,14 +39,14 @@
 </template>
 
 <script>
-
     export default {
         props: ['card'],
+
 
         data() {
             return {
                 loading: true,
-                disks: []
+                disks: [],
             }
         },
 
@@ -56,7 +56,7 @@
 
         methods: {
             refresh() {
-
+                location.reload(true);
             },
 
             load() {
@@ -70,13 +70,8 @@
 
             loadStats() {
                 return Nova.request().post('/nova-vendor/storage-info-card/stats', {
-                    disk: 'yandex',
+                    disk: this.card.disk_name,
                 }).then((res) => {
-                    this.disks.push({
-                        bucket: res.data.bucket,
-                        size: res.data.size,
-                        items: res.data.items,
-                    });
                     this.disks.push({
                         bucket: res.data.bucket,
                         size: res.data.size,

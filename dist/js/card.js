@@ -282,7 +282,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 
-
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['card'],
 
@@ -298,7 +297,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
     methods: {
-        refresh: function refresh() {},
+        refresh: function refresh() {
+            location.reload(true);
+        },
         load: function load() {
             var _this = this;
 
@@ -311,13 +312,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var _this2 = this;
 
             return Nova.request().post('/nova-vendor/storage-info-card/stats', {
-                disk: 'yandex'
+                disk: this.card.disk_name
             }).then(function (res) {
-                _this2.disks.push({
-                    bucket: res.data.bucket,
-                    size: res.data.size,
-                    items: res.data.items
-                });
                 _this2.disks.push({
                     bucket: res.data.bucket,
                     size: res.data.size,
@@ -366,7 +362,11 @@ var render = function() {
                     staticClass:
                       "flex rounded-full bg-50 uppercase px-2 py-1 text-xs font-bold mr-3"
                   },
-                  [_vm._v("5 TB")]
+                  [
+                    _vm._v(
+                      _vm._s(_vm.card.count) + " " + _vm._s(_vm.card.measure)
+                    )
+                  ]
                 )
               ])
             ]),
@@ -429,7 +429,7 @@ var render = function() {
                       [
                         _c("div", { staticClass: "flex flex-col" }, [
                           _c("span", { staticClass: "font-semibold" }, [
-                            _vm._v("test")
+                            _vm._v(_vm._s(_vm.card.name))
                           ]),
                           _vm._v(" "),
                           _c("span", { staticClass: "w-full font-light" }, [

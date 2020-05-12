@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Storage;
 use League\Flysystem\AwsS3v3\AwsS3Adapter;
 use League\Flysystem\Filesystem;
+use Illuminate\Support\Facades\Cache;
+
 
 class CardController extends Controller
 {
@@ -51,12 +53,14 @@ class CardController extends Controller
              * Return success status and data for current disk.
              * Used choice to create interesting and common view for items
              */
-            return response()->json([
-                'status' => 200,
-                'size' => $this->bytesToHuman($size),
-                'bucket' => $bucket,
-                'items' => $this->prettyItems($items, 'объект|объекта|объектов')
-            ], 200);
+            return Cache::remember('qubeek-nova-storage-info-card-'.$data['disk'], 5*60, function() use ($items, $bucket, $size) {
+                return response()->json([
+                    'status' => 200,
+                    'size' => $this->bytesToHuman($size),
+                    'bucket' => $bucket,
+                    'items' => $this->prettyItems($items, 'объект|объекта|объектов')
+                ], 200);
+            });
         } else {
             /** Return error, when the disk doesn't provide S3 compatibility */
             return response()->json([
@@ -113,4 +117,5 @@ class CardController extends Controller
             $adapter->getClient(), $adapter->getBucket()
         ];
     }
+
 }
