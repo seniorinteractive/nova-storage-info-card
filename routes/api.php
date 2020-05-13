@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Qubeek\StorageInfoCard\Http\Controllers\CardController;
 
@@ -15,6 +14,6 @@ use Qubeek\StorageInfoCard\Http\Controllers\CardController;
 |
 */
 
-Route::post('/stats', CardController::class . '@storage');
-Route::post('/refresh', CardController::class . '@refresh');
-Route::get('/lang', CardController::class . '@lang');
+Route::post('/stats', CardController::class.'@storage');
+Route::post('/refresh', CardController::class.'@refresh');
+Route::get('/lang', CardController::class.'@lang');
