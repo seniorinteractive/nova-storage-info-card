@@ -16,3 +16,4 @@ use Qubeek\StorageInfoCard\Http\Controllers\CardController;
 */
 
 Route::post('/stats', CardController::class . '@storage');
+Route::post('/refresh', CardController::class . '@refresh');

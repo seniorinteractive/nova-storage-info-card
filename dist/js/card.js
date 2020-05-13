@@ -281,6 +281,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['card'],
@@ -298,23 +302,38 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
     methods: {
         refresh: function refresh() {
-            location.reload(true);
-        },
-        load: function load() {
             var _this = this;
 
-            this.loading = true;
-            Promise.all([this.loadStats()]).then(function () {
-                _this.loading = false;
+            return Nova.request().post('/nova-vendor/storage-info-card/refresh', {
+                disks: this.card.disks
+            }).then(function (res) {
+                _this.load();
             });
         },
-        loadStats: function loadStats() {
+        load: function load() {
             var _this2 = this;
 
+            /** Set loading indicator */
+            this.loading = true;
+
+            /** Clear all disks */
+            this.disks = [];
+
+            /** Load all disks information buckets */
+            Promise.all(this.card.disks.map(function (d) {
+                return _this2.loadStats(d.title, d.disk_name);
+            })).then(function () {
+                _this2.loading = false;
+            });
+        },
+        loadStats: function loadStats(title, disk) {
+            var _this3 = this;
+
             return Nova.request().post('/nova-vendor/storage-info-card/stats', {
-                disk: this.card.disk_name
+                disk: disk
             }).then(function (res) {
-                _this2.disks.push({
+                _this3.disks.push({
+                    title: title,
                     bucket: res.data.bucket,
                     size: res.data.size,
                     items: res.data.items
@@ -356,18 +375,16 @@ var render = function() {
                   [_vm._v("S3")]
                 ),
                 _vm._v(" "),
-                _c(
-                  "span",
-                  {
-                    staticClass:
-                      "flex rounded-full bg-50 uppercase px-2 py-1 text-xs font-bold mr-3"
-                  },
-                  [
-                    _vm._v(
-                      _vm._s(_vm.card.count) + " " + _vm._s(_vm.card.measure)
+                _vm.card.size && _vm.card.size.length > 0
+                  ? _c(
+                      "span",
+                      {
+                        staticClass:
+                          "flex rounded-full bg-50 uppercase px-2 py-1 text-xs font-bold mr-3"
+                      },
+                      [_vm._v(_vm._s(_vm.card.size))]
                     )
-                  ]
-                )
+                  : _vm._e()
               ])
             ]),
             _vm._v(" "),
@@ -429,7 +446,7 @@ var render = function() {
                       [
                         _c("div", { staticClass: "flex flex-col" }, [
                           _c("span", { staticClass: "font-semibold" }, [
-                            _vm._v(_vm._s(_vm.card.name))
+                            _vm._v(_vm._s(disk.title))
                           ]),
                           _vm._v(" "),
                           _c("span", { staticClass: "w-full font-light" }, [
@@ -438,9 +455,11 @@ var render = function() {
                         ]),
                         _vm._v(" "),
                         _c("div", { staticClass: "flex flex-col" }, [
-                          _c("span", { staticClass: "w-full font-semibold" }, [
-                            _vm._v(_vm._s(disk.size))
-                          ]),
+                          _c(
+                            "span",
+                            { staticClass: "w-full font-semibold text-right" },
+                            [_vm._v(_vm._s(disk.size))]
+                          ),
                           _vm._v(" "),
                           _c("span", { staticClass: "w-full font-light" }, [
                             _vm._v(_vm._s(disk.items))

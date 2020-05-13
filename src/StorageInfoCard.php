@@ -24,37 +24,28 @@ class StorageInfoCard extends Card
     }
 
     /**
-     * @param bool $name
-     * @return StorageInfoCard
-     * Name of your storage
-     */
-    public function name($name = true)
-    {
-        return $this->withMeta(['name' => $name]);
-    }
-
-    /**
-     * @param bool $count
-     * @param bool $measure
-     * @return StorageInfoCard
      * Maximum amount of available memory in storage
+     *
+     * @param string $size
+     * @return StorageInfoCard
      */
-    public function memory($count = true, $measure = true)
+    public function memory(string $size)
     {
         return $this->withMeta([
-            'count' => $count,
-            'measure' => $measure]);
+            'size' => $size
+        ]);
     }
 
     /**
-     * @param bool $disk_name
+     * Add disks to work with them
+     *
+     * @param array $disks
      * @return StorageInfoCard
-     * Name of file system provider
      */
-    public function disk($disk_name = true)
+    public function disks(array $disks)
     {
         return $this->withMeta([
-            'disk_name' => $disk_name
+            'disks' => $disks
         ]);
     }
 }

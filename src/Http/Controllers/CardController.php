@@ -6,8 +6,10 @@ use Aws\ResultPaginator;
 use Aws\S3\S3Client;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Storage;
+use Laravel\Nova\Http\Requests\NovaRequest;
 use League\Flysystem\AwsS3v3\AwsS3Adapter;
 use League\Flysystem\Filesystem;
 use Illuminate\Support\Facades\Cache;
@@ -15,6 +17,29 @@ use Illuminate\Support\Facades\Cache;
 
 class CardController extends Controller
 {
+    /**
+     * @return \Illuminate\Http\Response
+     */
+    public function refresh()
+    {
+        /** Validate request */
+        $data = request()->validate([
+            'disks' => 'required|array|min:0'
+        ]);
+
+        /** @var Collection $disks */
+        $disks = collect($data['disks']);
+
+        /**
+         * Forget all stored values
+         */
+        $disks->each(function ($disk) {
+            Cache::forget($this->getKey($disk['disk_name']));
+        });
+
+        return response()->noContent();
+    }
+
     /**
      * @param int $size
      * @param int $items
@@ -35,25 +60,33 @@ class CardController extends Controller
          * In future we should create extra functions to work with local drivers
          */
         if ($s3 instanceof S3Client) {
-            /**
-             * Fetch list of object from storage
-             * @var ResultPaginator $results
-             */
-            $results = $s3->getPaginator('ListObjectsV2', [
-                'Bucket' => $bucket,
-            ]);
-
-            /** Serve over results from request */
-            foreach ($results as $result) {
-                $size += array_sum(array_column($result['Contents'], 'Size'));
-                $items += count(array_values($result['Contents']));
-            }
 
             /**
-             * Return success status and data for current disk.
-             * Used choice to create interesting and common view for items
+             * Prepare string key for storing cache or request
+             * @var string $key
              */
-            return Cache::remember('qubeek-nova-storage-info-card-'.$data['disk'], 5*60, function() use ($items, $bucket, $size) {
+            $key = $this->getKey($data['disk']);
+
+            return Cache::remember($key, 5 * 60, function () use ($items, $bucket, $size, $s3) {
+                /**
+                 * Fetch list of object from storage
+                 * @var ResultPaginator $results
+                 */
+                $results = $s3->getPaginator('ListObjectsV2', [
+                    'Bucket' => $bucket,
+                ]);
+
+                /** Serve over results from request */
+                foreach ($results as $result) {
+                    $size += array_sum(array_column($result['Contents'], 'Size'));
+                    $items += count(array_values($result['Contents']));
+                }
+
+                /**
+                 * Return success status and data for current disk.
+                 * Used choice to create interesting and common view for items
+                 */
+
                 return response()->json([
                     'status' => 200,
                     'size' => $this->bytesToHuman($size),
@@ -118,4 +151,12 @@ class CardController extends Controller
         ];
     }
 
+    /**
+     * @param string $disk
+     * @return string
+     */
+    protected function getKey(string $disk)
+    {
+        return 'qubeek-nova-storage-info-card-' . $disk;
+    }
 }
