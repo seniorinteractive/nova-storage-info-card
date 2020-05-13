@@ -1,13 +1,24 @@
 {
     "name": "qubeek/nova-storage-info-card",
     "description": "A Laravel Nova card, that helps you to control your S3 type disks.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "qubeek",
+            "email": "hello@qubeek.io",
+            "homepage": "https://github.com/qubeek"
+        }
+    ],
+    "homepage": "https://github.com/qubeek/mdash",
     "keywords": [
         "laravel",
-        "nova"
+        "nova",
+        "storage",
+        "S3",
+        "card"
     ],
-    "license": "MIT",
     "require": {
-        "php": ">=7.1.0"
+        "php": ">=7.0.0"
     },
     "autoload": {
         "psr-4": {
