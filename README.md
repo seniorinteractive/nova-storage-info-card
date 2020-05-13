@@ -1,4 +1,7 @@
 # nova-storage-info-card
+[![Latest Version on Packagist][ico-version]][link-packagist]
+[![Total Downloads][ico-downloads]][link-downloads]
+
 Get basic information about storage usage. Be sure, that you use **S3 driver for disks, that you adding to that card**
 
 \
