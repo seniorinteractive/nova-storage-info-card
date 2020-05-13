@@ -1,6 +1,8 @@
 # nova-storage-info-card
+
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Total Downloads][ico-downloads]][link-downloads]
+[![StyleCI](https://github.styleci.io/repos/262051713/shield?branch=master)](https://github.styleci.io/repos/262051713)
 
 Get basic information about storage usage. Be sure, that you use **S3 driver for disks, that you adding to that card**
 
@@ -77,4 +79,4 @@ protected function cards()
 
 ## License
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+The MIT License (MIT). Please see [License File](LICENSE) for more information.
