@@ -91,7 +91,7 @@ class CardController extends Controller
                     'status' => 200,
                     'size' => $this->bytesToHuman($size),
                     'bucket' => $bucket,
-                    'items' => $this->prettyItems($items, 'объект|объекта|объектов')
+                    'items' => $this->prettyItems($items)
                 ], 200);
             });
         } else {
@@ -120,12 +120,11 @@ class CardController extends Controller
      * Just prettify output
      *
      * @param int $items
-     * @param string $values
      * @return string
      */
-    protected function prettyItems(int $items, string $values)
+    protected function prettyItems(int $items)
     {
-        return number_format($items, 0, ',', ' ') . ' ' . Lang::choice($values, $items, [], 'ru');
+        return number_format($items, 0, ',', ' ') . ' ' . Lang::choice('novaStorageInfoCard.values', $items);
     }
 
     /**
@@ -158,5 +157,10 @@ class CardController extends Controller
     protected function getKey(string $disk)
     {
         return 'qubeek-nova-storage-info-card-' . $disk;
+    }
+
+    public function lang()
+    {
+        return Lang::get('*');
     }
 }
