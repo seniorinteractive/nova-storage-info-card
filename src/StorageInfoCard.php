@@ -24,28 +24,30 @@ class StorageInfoCard extends Card
     }
 
     /**
-     * Maximum amount of available memory in storage
+     * Maximum amount of available memory in storage.
      *
      * @param string $size
+     *
      * @return StorageInfoCard
      */
     public function memory(string $size)
     {
         return $this->withMeta([
-            'size' => $size
+            'size' => $size,
         ]);
     }
 
     /**
-     * Add disks to work with them
+     * Add disks to work with them.
      *
      * @param array $disks
+     *
      * @return StorageInfoCard
      */
     public function disks(array $disks)
     {
         return $this->withMeta([
-            'disks' => $disks
+            'disks' => $disks,
         ]);
     }
 }

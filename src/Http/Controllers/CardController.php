@@ -7,13 +7,11 @@ use Aws\S3\S3Client;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Storage;
-use Laravel\Nova\Http\Requests\NovaRequest;
 use League\Flysystem\AwsS3v3\AwsS3Adapter;
 use League\Flysystem\Filesystem;
-use Illuminate\Support\Facades\Cache;
-
 
 class CardController extends Controller
 {
@@ -24,14 +22,14 @@ class CardController extends Controller
     {
         /** Validate request */
         $data = request()->validate([
-            'disks' => 'required|array|min:0'
+            'disks' => 'required|array|min:0',
         ]);
 
         /** @var Collection $disks */
         $disks = collect($data['disks']);
 
         /**
-         * Forget all stored values
+         * Forget all stored values.
          */
         $disks->each(function ($disk) {
             Cache::forget($this->getKey($disk['disk_name']));
@@ -43,12 +41,13 @@ class CardController extends Controller
     /**
      * @param int $size
      * @param int $items
+     *
      * @return \Illuminate\Http\JsonResponse
      */
     public function storage($size = 0, $items = 0)
     {
         $data = request()->validate([
-            'disk' => 'required'
+            'disk' => 'required',
         ]);
 
         /** @var S3Client $client */
@@ -57,19 +56,21 @@ class CardController extends Controller
         /**
          * Check, that we working with S3 client only.
          * Otherwise we need to use different driver.
-         * In future we should create extra functions to work with local drivers
+         * In future we should create extra functions to work with local drivers.
          */
         if ($s3 instanceof S3Client) {
 
             /**
-             * Prepare string key for storing cache or request
+             * Prepare string key for storing cache or request.
+             *
              * @var string $key
              */
             $key = $this->getKey($data['disk']);
 
             return Cache::remember($key, 5 * 60, function () use ($items, $bucket, $size, $s3) {
                 /**
-                 * Fetch list of object from storage
+                 * Fetch list of object from storage.
+                 *
                  * @var ResultPaginator $results
                  */
                 $results = $s3->getPaginator('ListObjectsV2', [
@@ -84,54 +85,60 @@ class CardController extends Controller
 
                 /**
                  * Return success status and data for current disk.
-                 * Used choice to create interesting and common view for items
+                 * Used choice to create interesting and common view for items.
                  */
 
                 return response()->json([
                     'status' => 200,
-                    'size' => $this->bytesToHuman($size),
+                    'size'   => $this->bytesToHuman($size),
                     'bucket' => $bucket,
-                    'items' => $this->prettyItems($items)
+                    'items'  => $this->prettyItems($items),
                 ], 200);
             });
         } else {
             /** Return error, when the disk doesn't provide S3 compatibility */
             return response()->json([
-                'status' => 400,
-                'message' => 'The disk doesn\'t provide S3 compatibility'
+                'status'  => 400,
+                'message' => 'The disk doesn\'t provide S3 compatibility',
             ], 400);
         }
     }
 
     /**
-     * Prettify output for bytes
+     * Prettify output for bytes.
      *
      * @param $bytes
+     *
      * @return string
      */
     protected function bytesToHuman($bytes)
     {
         $units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
-        for ($i = 0; $bytes > 1024; $i++) $bytes /= 1024;
-        return round($bytes, 2) . ' ' . $units[$i];
+        for ($i = 0; $bytes > 1024; $i++) {
+            $bytes /= 1024;
+        }
+
+        return round($bytes, 2).' '.$units[$i];
     }
 
     /**
-     * Just prettify output
+     * Just prettify output.
      *
      * @param int $items
+     *
      * @return string
      */
     protected function prettyItems(int $items)
     {
-        return number_format($items, 0, ',', ' ') . ' ' . Lang::choice('novaStorageInfoCard.values', $items);
+        return number_format($items, 0, ',', ' ').' '.Lang::choice('novaStorageInfoCard.values', $items);
     }
 
     /**
      * Just prettify digging into object.
-     * We can use it by one line, but this isn't clear
+     * We can use it by one line, but this isn't clear.
      *
      * @param string $disk
+     *
      * @return array
      */
     protected function getClient(string $disk)
@@ -146,17 +153,18 @@ class CardController extends Controller
         $adapter = $driver->getAdapter();
 
         return [
-            $adapter->getClient(), $adapter->getBucket()
+            $adapter->getClient(), $adapter->getBucket(),
         ];
     }
 
     /**
      * @param string $disk
+     *
      * @return string
      */
     protected function getKey(string $disk)
     {
-        return 'qubeek-nova-storage-info-card-' . $disk;
+        return 'qubeek-nova-storage-info-card-'.$disk;
     }
 
     public function lang()
