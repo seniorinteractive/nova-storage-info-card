@@ -15,6 +15,14 @@ You can install the package into a Laravel app that uses Nova via composer:
 composer require qubeek/nova-storage-info-card
 ```
 
+## Translation
+
+If you want to override localization, you can publish lang files using that command:
+
+```bash
+php artisan vendor:publish --provider="Qubeek\StorageInfoCard\CardServiceProvider"
+```
+
 ## Usage
 
 Register the card with Nova. To use the package, you need to indicate a disk meta in the format: 
