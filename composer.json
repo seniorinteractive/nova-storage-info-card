@@ -1,6 +1,6 @@
 {
-    "name": "qubeek/storage-info-card",
-    "description": "A Laravel Nova card.",
+    "name": "qubeek/nova-storage-info-card",
+    "description": "A Laravel Nova card, that helps you to control your S3 type disks.",
     "keywords": [
         "laravel",
         "nova"

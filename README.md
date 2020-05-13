@@ -1,9 +1,9 @@
 # nova-storage-info-card
-Get basic information about the storage usage. Be sure, that you use **S3 driver for disks, that you adding to that card**
+Get basic information about storage usage. Be sure, that you use **S3 driver for disks, that you adding to that card**
 
 \
 \
-**Note, that you need to add disk to config/filesystem.php**
+**Note, that you need to add the disk to config/filesystem.php**
 
 ![alt text](screenshots/nova-card.png)
 
@@ -17,8 +17,16 @@ composer require qubeek/nova-storage-info-card
 
 ## Usage
 
-Register the card with Nova. To use the package, you need to indicate a disk meta in the format: the name of the container in Storage and the custom name.
+Register the card with Nova. To use the package, you need to indicate a disk meta in the format: 
+
+- the name that you used in **config/filesystem.php**
+- title for a table (optional).
+
+
+\
 In order to display the maximum disk size, write a memory meta which includes the maximum disk size.
+
+\
 For example:
 ```php
 class NovaServiceProvider extends NovaApplicationServiceProvider
