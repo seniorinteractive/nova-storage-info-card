@@ -32,7 +32,7 @@
                         </div>
                         <div class="flex flex-col">
                             <span class="w-full font-semibold text-right">{{ disk.size }}</span>
-                            <span class="w-full font-light">{{ disk.items }}</span>
+                            <span class="w-full font-light text-right">{{ disk.items }}</span>
                         </div>
                     </div>
                 </li>
