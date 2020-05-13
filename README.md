@@ -1,7 +1,10 @@
 # nova-storage-info-card
 
-[![Latest Version on Packagist][ico-version]][link-packagist]
-[![Total Downloads][ico-downloads]][link-downloads]
+[![Latest Stable Version](https://poser.pugx.org/qubeek/nova-storage-info-card/v/stable)](https://packagist.org/packages/qubeek/nova-storage-info-card)
+[![Total Downloads](https://poser.pugx.org/qubeek/nova-storage-info-card/downloads)](https://packagist.org/packages/qubeek/nova-storage-info-card)
+[![Latest Unstable Version](https://poser.pugx.org/qubeek/nova-storage-info-card/v/unstable)](https://packagist.org/packages/qubeek/nova-storage-info-card)
+[![License](https://poser.pugx.org/qubeek/nova-storage-info-card/license)](https://packagist.org/packages/qubeek/nova-storage-info-card)
+[![composer.lock](https://poser.pugx.org/qubeek/nova-storage-info-card/composerlock)](https://packagist.org/packages/qubeek/nova-storage-info-card)
 [![StyleCI](https://github.styleci.io/repos/262051713/shield?branch=master)](https://github.styleci.io/repos/262051713)
 
 Get basic information about storage usage. Be sure, that you use **S3 driver for disks, that you adding to that card**
