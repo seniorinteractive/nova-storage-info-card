@@ -67,7 +67,11 @@ class CardController extends Controller
              */
             $key = $this->getKey($data['disk']);
 
-            return Cache::remember($key, 5 * 60, function () use ($items, $bucket, $size, $s3) {
+            $time = request()->input('time', 0);
+
+            $time = is_numeric($time)? new \DateInterval(sprinf('PT%dS', $time * 60)) : $time;
+
+            return Cache::remember($key, $time, function () use ($items, $bucket, $size, $s3) {
                 /**
                  * Fetch list of object from storage.
                  *

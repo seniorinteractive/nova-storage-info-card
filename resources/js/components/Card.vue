@@ -87,6 +87,7 @@
             loadStats(title, disk) {
                 return Nova.request().post('/nova-vendor/storage-info-card/stats', {
                     disk: disk,
+                    time:this.time
                 }).then((res) => {
                     this.disks.push({
                         title: title,

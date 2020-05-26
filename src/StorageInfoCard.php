@@ -50,4 +50,18 @@ class StorageInfoCard extends Card
             'disks' => $disks,
         ]);
     }
+
+    /**
+     * Add cahce in minutes
+     *
+     * @param string $time
+     *
+     * @return StorageInfoCard
+     */
+    public function cacheFor(string $time)
+    {
+        return $this->withMeta([
+            'time' => $time,
+        ]);
+    }
 }
